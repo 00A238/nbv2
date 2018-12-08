@@ -1,0 +1,29 @@
+@charset "UTF-8";
+
+/**
+ * Number Buster v2: 盤面表示のためのスタイル指定
+ */
+
+/* メインの盤面 */
+#main {
+	width : 80vmin;
+	margin : auto;
+}
+/* マス */
+div.number {
+	border: 1px solid #3DCCCC;
+	display : flex;
+	align-items : center;
+	justify-content : center;
+	height : calc(80vmin * (1 / 3));
+	transition : transform 0.3s linear, opacity 0s ease 0.3s;
+}
+/* タップして死んだマス */
+div.number.hit {
+	transform : rotate(360deg);
+	opacity : 0.25;
+}
+/* レベル設定ダイアログのラジオボタン */
+#configDialog input[type='radio'] {
+	display: none;
+}

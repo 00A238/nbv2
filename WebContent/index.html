@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Number Buster v2</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="盤面のマスに現れる1〜マス数の乱数を，大きい数字から順に，速く正確にタップして潰していくゲーム。
+全ての数をタップしたら終了する。マスの数，更新間隔，表示確率のそれぞれでレベル設定ができる。uikit3フレームワークを使用。">
+	<meta name="author" content="Atsushi TABuchi (a238)">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="uikit3/css/uikit.min.css" />
+	<link rel="stylesheet" href="nb/nb.css" />
+	<script src="uikit3/js/uikit.min.js"></script>
+	<script src="uikit3/js/uikit-icons.min.js"></script>
+	<script src="nb/Config.class.js"></script>
+	<script src="nb/Renderer.class.js"></script>
+	<script src="nb/Scorer.class.js"></script>
+</head>
+<body>
+	<div id="wrapper" class="uk-margin-left uk-margin-right uk-margin-top">
+		<!-- ヘッダ -->
+		<div id="header" class="uk-section uk-padding-small">
+			<div data-uk-grid class="uk-margin-remove-left">
+				<button
+					class="uk-button uk-button-default uk-background-muted uk-border-rounded uk-width-1-5"
+					data-uk-toggle="target:#configDialog">
+					<span data-uk-icon="cog"></span> <span class="uk-text-nowrap uk-visible@s">レベル設定</span>
+				</button>
+				<h2 class="uk-text-center uk-width-3-5 uk-padding-remove-left">Number Buster v2</h2>
+				<button id="start"
+					class="uk-button uk-button-default uk-background-muted uk-border-rounded uk-width-1-5">
+					<span data-uk-icon="play-circle"></span> <span class="uk-text-nowrap uk-visible@s">スタート</span>
+				</button>
+			</div>
+		</div>
+		<!-- 盤面 -->
+		<div id="main" class="uk-section uk-padding-small">
+			<div data-uk-grid class="uk-grid-collapse uk-child-width-1-3">
+				<!-- 乱数を表示するマス（最大5x5=25個，初期値3x3=9個） -->
+				<div class="number uk-text-lead uk-text-bold">1</div>
+				<div class="number uk-text-lead uk-text-bold">2</div>
+				<div class="number uk-text-lead uk-text-bold">3</div>
+				<div class="number uk-text-lead uk-text-bold">4</div>
+				<div class="number uk-text-lead uk-text-bold">5</div>
+				<div class="number uk-text-lead uk-text-bold">6</div>
+				<div class="number uk-text-lead uk-text-bold">7</div>
+				<div class="number uk-text-lead uk-text-bold">8</div>
+				<div class="number uk-text-lead uk-text-bold">9</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">10</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">11</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">12</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">13</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">14</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">15</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">16</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">17</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">18</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">19</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">20</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">21</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">22</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">23</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">24</div>
+				<div class="number uk-text-lead uk-text-bold" hidden="hidden">25</div>
+			</div>
+		</div>
+		<!-- フッター -->
+		<div id="footer" class="uk-section uk-padding-remove-vertical uk-text-center">
+			<span>Copyright (c) 2018 Kyoto Computer Gakuin, All Rights Reserved.</span>
+		</div>
+	</div>
+	<!-- レベル設定ダイアログ -->
+	<div id="configDialog" data-uk-modal>
+		<div class="uk-modal-dialog uk-modal-body">
+			<button class="uk-modal-close-default" type="button" data-uk-close></button>
+			<h2 class="uk-modal-title">レベル設定</h2>
+			<form data-uk-grid>
+				<div class="uk-width-1-4">マスの数</div>
+				<div class="uk-width-3-4 uk-button-group" id="configBlockSize">
+					<label class="uk-button uk-button-default"> <input
+						type="radio" name="blockSize" value="2" />小
+					</label>
+					<label class="uk-button uk-button-default uk-button-primary">
+						<input type="radio" name="blockSize" value="3" checked />並
+					</label>
+					<label class="uk-button uk-button-default"> <input
+						type="radio" name="blockSize" value="4" />多
+					</label>
+					<label class="uk-button uk-button-default"> <input
+						type="radio" name="blockSize" value="5" />超
+					</label>
+				</div>
+				<div class="uk-width-1-4">更新間隔</div>
+				<div class="uk-width-3-4 uk-button-group" id="configInterval">
+					<label class="uk-button uk-button-default">
+						<input type="radio" name="interval" value="1000" />遅
+					</label>
+					<label class="uk-button uk-button-default uk-button-primary">
+						<input type="radio" name="interval" value="750" checked />並
+					</label>
+					<label class="uk-button uk-button-default">
+						<input type="radio" name="interval" value="400" />速
+					</label>
+					<label class="uk-button uk-button-default">
+						<input type="radio" name="interval" value="250" />超
+					</label>
+				</div>
+				<div class="uk-width-1-4">表示確率</div>
+				<div class="uk-width-3-4 uk-button-group" id="configProbability">
+					<label class="uk-button uk-button-default">
+						<input type="radio" name="probability" value="100" />常
+					</label>
+					<label class="uk-button uk-button-default uk-button-primary">
+						<input type="radio" name="probability" value="75" checked />高
+					</label>
+					<label class="uk-button uk-button-default">
+						<input type="radio" name="probability" value="50" />中
+					</label>
+					<label class="uk-button uk-button-default">
+						<input type="radio" name="probability" value="25" />低
+					</label>
+				</div>
+			</form>
+		</div>
+	</div>
+	<!-- スコア表示ダイアログ -->
+	<div id="scoreDialog" data-uk-modal>
+		<div class="uk-modal-dialog uk-modal-body">
+			<button class="uk-modal-close-default" type="button" data-uk-close></button>
+			<h2 class="uk-modal-title">ただいまのスコア</h2>
+			<span class="message"></span>
+			<p class="score uk-heading-primary uk-text-center"></p>
+			<p>過去の最高スコア：<span class="prevScore"></span></p>
+			<p>プレイ時間：<span class="duration"></span>，打率：<span class="hitRate"></span></p>
+		</div>
+	</div>
+	<!-- 初期化とイベントハンドラ設定 -->
+	<script src="nb/nb.js"></script>
+</body>
+</html>
